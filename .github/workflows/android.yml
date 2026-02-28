@@ -1,0 +1,41 @@
+name: Build Simple APK
+
+on:
+  push:
+    branches:
+      - main
+      - prod
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Give permission to gradlew
+        run: chmod +x ./gradlew
+
+      # 🔥 NO KEYSTORE
+      # 🔥 NO SECRETS
+      # 🔥 NO PROPERTIES
+
+      - name: Build Release APK (signed with debug key automatically)
+        run: ./gradlew assembleRelease
+
+      - name: Rename APK
+        run: mv app/build/outputs/apk/release/app-release.apk UmihiMusic.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: UmihiMusic
+          path: UmihiMusic.apk
