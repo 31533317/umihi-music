@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup JDK 17
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -24,11 +24,15 @@ jobs:
       - name: Give permission to gradlew
         run: chmod +x ./gradlew
 
-      # 🔥 NO KEYSTORE
-      # 🔥 NO SECRETS
-      # 🔥 NO PROPERTIES
+      # 🔥 Creamos keystore fake
+      - name: Create dummy keystore.properties
+        run: |
+          echo "storeFile=debug.keystore" > keystore.properties
+          echo "storePassword=android" >> keystore.properties
+          echo "keyAlias=androiddebugkey" >> keystore.properties
+          echo "keyPassword=android" >> keystore.properties
 
-      - name: Build Release APK (signed with debug key automatically)
+      - name: Build Release APK
         run: ./gradlew assembleRelease
 
       - name: Rename APK
